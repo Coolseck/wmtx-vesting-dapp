@@ -1,50 +1,56 @@
-# React + TypeScript + Vite
+# World Mobile Bonus Token Platform (WMTx vesting)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Welcome to the **World Mobile Bonus Token Platform (WMTx vesting)** project! This is a DApp(decentralized application) built using **React**, **Vite**, **TypeScript**, and **TailwindCSS**, integrating vesting contract by web3. It provides a modern and responsive interface for users to interact with the vesting contract.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React**: A JavaScript library for building user interfaces.
+- **Vite**: A fast and modern build tool for React projects.
+- **TypeScript**: A strongly-typed language that helps improve code quality and developer experience.
+- **TailwindCSS**: A utility-first CSS framework for designing beautiful and responsive layouts.
+- **Vesting contract integration**: The application integrates with the WMTx vesting contract for users to claim World Mobile Bonus Token.
 
-## Expanding the ESLint configuration
+## 📋 Prerequisites
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+Before getting started, ensure that you have the following tools installed on your local machine:
 
-- Configure the top-level `parserOptions` property like this:
+- **Node.js** (v18 or higher)
+- **npm** or **yarn**
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+## ⚡ Getting Started
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+### 1. Clone the Repository
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+Start by cloning the repository to your local machine:
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+```bash
+git clone https://github.com/thomson0313/wmtx-vesting-dapp.git
+cd wmtx-vesting-dapp
+
+``` 
+
+### 2. Install Dependencies
+Use npm or yarn to install the necessary dependencies:
+
+```bash
+npm install
+``` 
+
+Or, if you're using yarn:
+
+```bash
+yarn install
+``` 
+
+### 3. Run the Development Server
+Once the dependencies are installed, you can start the development server:
+
+```bash
+npm run dev
+``` 
+
+Or, if you're using yarn:
+```bash
+yarn run dev
+``` 
+The app will be running at http://localhost:5173
