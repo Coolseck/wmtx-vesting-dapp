@@ -1,0 +1,329 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base Dark Theme */
+:root {
+    --color-primary: white;
+    --color-light: #D4D4D4;
+    --color-light-border: #262626;
+    --color-primary-bg: black;
+    --color-card-bg: #171717;
+
+    [data-rk] .ju367vb6 {
+        --rk-colors-modalBackground: black !important;
+    }
+}
+
+/* Light Mode Overrides */
+.light {
+    --color-primary: black;
+    --color-light: #404040;
+    --color-light-border: #E5E5E5;
+    --color-primary-bg: #F6F6F6;
+    --color-card-bg: white;
+
+    [data-rk] .ju367vb6 {
+        --rk-colors-modalBackground: white !important;
+    }
+}
+
+html {
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* For Webkit browsers (Chrome, Safari, Edge) */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+/* For Firefox */
+.scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    /* IE/Edge */
+}
+
+
+@font-face {
+    font-family: 'Aeonik-Medium';
+    src: url('fonts/Aeonik-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Aeonik-Bold';
+    src: url('fonts/Aeonik-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Aeonik-Black';
+    src: url('fonts/Aeonik-Black.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+}
+
+body {
+    font-family: 'Aeonik-Regular', sans-serif;
+}
+
+.bg-image {
+    background-color: black;
+    /* background-image: url('/images/wmt-bg.png'); */
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: top;
+    position: relative;
+}
+
+.bg-image::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    height: 370px;
+    background: linear-gradient(181.27deg, rgba(18, 4, 37, 0) 21.34%, #120425 74.9%);
+}
+
+.bg-image-footer {
+    background-color: black;
+    background-image: url('/images/brand.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    /* position: relative; */
+}
+
+.bg-body-wmtx {
+    border-radius: 30px;
+    /* box-shadow: 0 -6px 84px #d760ff70; */
+}
+
+.modal-wmtx {
+    border: 1px solid #4f3e58;
+    border-radius: 30px !important;
+    animation: bounceInUpModal 0.6s ease forwards;
+}
+
+@keyframes bounceInUpModal {
+    0% {
+        transform: translate(0%, 100%);
+        opacity: 0;
+    }
+
+    60% {
+        transform: translate(0%, -10px);
+        opacity: 1;
+    }
+
+    80% {
+        transform: translate(0%, 5px);
+    }
+
+    100% {
+        transform: translate(0%, 0);
+    }
+}
+
+.bg-summary-wmtx {
+    background: linear-gradient(356deg, #111621 -40.07%, #1d232e00 47.33%),
+        linear-gradient(342deg, #1d232e00 49.96%, #504152 154.81%),
+        #111621;
+    border: 1px solid #4f3e58;
+    border-radius: 20px;
+    box-shadow: 0 16px 84px #d760ff70;
+}
+
+.bg-cerise-red {
+    background-color: #D42E58;
+}
+
+.button-gradient-secondary {
+    background: linear-gradient(90deg, #f6642d, #ea1c50, #962ce0, #e778d7, #962ce0);
+    background-size: 500% 500%;
+    animation: MouseOutButton 1s ease forwards
+}
+
+.button-gradient-secondary:hover {
+    animation: MouseInButton 1s ease forwards
+}
+
+.button-gradient-primary {
+    background: linear-gradient(271deg, #962ce0, #e778d7, #962ce0, #2a0876, #6244a6);
+    background-size: 500% 500%;
+    animation: MouseOutButton 1s ease forwards
+}
+
+.button-gradient-primary:hover {
+    animation: MouseInButton 1s ease forwards
+}
+
+.button-gradient-no-background {
+    background: linear-gradient(271deg, #962ce0, #e778d7, #962ce0, #fff, #fff);
+    background-size: 500% 500%;
+    animation: MouseOutButton 1s ease forwards
+}
+
+.button-gradient-no-background:hover {
+    animation: MouseInButton 1s ease forwards
+}
+
+@keyframes MouseOutButton {
+    to {
+        background-position: 0 50%
+    }
+
+    0% {
+        background-position: 100% 51%
+    }
+}
+
+@keyframes MouseInButton {
+    0% {
+        background-position: 0 50%
+    }
+
+    to {
+        background-position: 100% 51%
+    }
+}
+
+.loader {
+    border: 2px solid rgba(246, 100, 45, .6);
+    border-left-color: transparent;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    animation: spin89345 1s linear infinite;
+}
+
+@keyframes spin89345 {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.iekbcc0.ju367va.ju367v1s button {
+    border-radius: 100px;
+}
+
+.iekbcc0.ju367va.ju367v1s button:nth-child(2)>div {
+    border-radius: 100px;
+}
+
+
+.direction-ui {
+    border: 1px solid #313131;
+}
+
+.direction-ui>.chain:last-child {
+    display: flex;
+    flex-direction: row-reverse;
+    text-align: right;
+}
+
+.bg-base {
+    background-color: black;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.active-tab {
+    background-color: var(--color-accent);
+}
+
+@media screen and (max-width: 1023px) {
+    .modal-wmtx {
+        min-width: 100%;
+        border-radius: 0 !important;
+    }
+}
+
+td>button {
+    background-color: var(--color-accent);
+    color: #fff;
+    height: 34px;
+    text-transform: capitalize;
+}
+
+p.status {
+    background: #3a3445;
+    color: #ffb654;
+    width: fit-content;
+    padding: 3px 7px;
+    border-radius: 40px;
+    text-transform: capitalize;
+
+    &[data-status="success"],
+    &[data-status="finalized"] {
+        color: #74c959;
+    }
+
+    &[data-status="reverted"] {
+        color: #ff546e;
+    }
+
+    &[data-status="waiting-to-finalize"] {
+        color: #ffb654;
+    }
+
+    &[data-status="waiting-to-prove"] {
+        color: #ffb654;
+    }
+
+    &[data-status="ready-to-prove"] {
+        color: #8f54ff;
+    }
+
+    &[data-status="prove"] {
+        color: #8f54ff;
+    }
+
+}
+
+[type=number] {
+    padding: .5rem .75rem;
+}
+
+.full-height,
+.menu-h {
+    height: 100vh;
+}
+
+.table-h {
+    overflow-x: scroll;
+}
+
+@media (width <=767px) {
+    .full-height {
+        height: 50vh;
+    }
+}
+
+.accent-font {
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background: linear-gradient(89.85deg, #c9d42e 12.73%, #686568 90.75%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+}
