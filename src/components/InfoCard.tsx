@@ -1,14 +1,15 @@
 import { InfoIcon, SquareArrowOutUpRight } from "lucide-react";
-import Popover from "./Popover";
+import PopoverModal from "./PopoverModal";
 import { shortNumber } from "../pages/leaderBoard";
 import { useState } from "react";
 import { ConnectWalletButton } from "../utils/lib/connect-button";
 import { useWalletContext } from "../utils/context/walletContext";
 
-const InfoCard = ({ disabled, label, value, stakeAction, unstakeAction, viewDetail, staked }: any) => {
+const InfoCard = ({ disabled, label, value, stakeAction, unstakeAction, viewDetail, staked, children }: any) => {
 
     const { data } = useWalletContext();
     const [price, setPrice] = useState(0);
+    const [modalStatus, setModalStatus] = useState(false);
 
     const getTitle = () => {
         switch (label) {
@@ -26,25 +27,6 @@ const InfoCard = ({ disabled, label, value, stakeAction, unstakeAction, viewDeta
                 return "Available to unstake";
             default:
                 return "Total Rewards";
-        }
-    }
-
-    const getHint = () => {
-        switch (label) {
-            case "reward":
-                return "Your rewards of WMTx tokens based in your total staked amount and staking duration.";
-            case "stake":
-                return "Your total amount of your staked WMTx tokens.";
-            case "duration":
-                return "Your staking duration of your staked WMTx tokens.";
-            case "balance":
-                return "Your WMTx Balance in the wallet connected in the platform.";
-            case "canstake":
-                return "Your available amount of WMTx to stake. It is just your wallet balance of WMTx";
-            case "canunstake":
-                return "Your available amount of WMTx to unstake. It is just amount of your staked WMTx tokens";
-            default:
-                return "Coming soon !";
         }
     }
 
@@ -69,14 +51,19 @@ const InfoCard = ({ disabled, label, value, stakeAction, unstakeAction, viewDeta
     return (
         <div className={`rounded-3xl ${label === 'reward' ? 'bg-[#fff533]' : 'bg-card-bg'} mx-auto flex flex-col gap-6 md:px-6 md:py-8 p-6 w-full`}>
             <div className="flex flex-row justify-between items-center">
-                <div className={`${label === 'reward' ? 'text-black' : 'text-primary'} font-[400]`}>{getTitle()}</div>
-                <Popover
+                <div className={`${label === 'reward' ? 'text-black' : 'text-primary'} font-[600]`}>{getTitle()}</div>
+                {/* <Popover
                     toggleChildren={<InfoIcon className={`${label === 'reward' ? 'text-black' : 'text-primary'}`} />}
                     position="right-full"
                 >
                     <div>{getHint()}</div>
-                </Popover>
-
+                </Popover> */}
+                <InfoIcon onClick={() => setModalStatus(true)} className={`${label === 'reward' ? 'text-black' : 'text-primary'}`} />
+                <PopoverModal isOpen={modalStatus} onClose={() => setModalStatus(false)} title={getTitle()}
+                // buttonActionTitle="Test" actionButtonstyle='bg-primary text-primary-bg'
+                >
+                    {children}
+                </PopoverModal>
             </div>
             <div>
                 <div className={`font-bold ${label === 'reward' ? 'text-black text-5xl' : 'text-primary text-4xl'}`}>{label === 'duration' ? (value === '-' ? 0 : value) + (value === 1 ? ' Day' : ' Days') : (label === 'reward' && (!data.address || !staked)) ? 'Stake WMTx' : shortNumber(Number(value === '-' ? 0 : value)) + 'WMTx'}</div>

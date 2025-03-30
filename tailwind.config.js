@@ -13,6 +13,7 @@ export default {
         'light': 'var(--color-light)',
         'light-border': 'var(--color-light-border)',
         'card-bg': 'var(--color-card-bg)',
+        'modal-bg': 'var(--color-modal-bg)'
       },
     },
   },

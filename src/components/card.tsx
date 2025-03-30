@@ -11,7 +11,6 @@ import InfoCard from "./InfoCard";
 import Modal from "./Modal";
 import Alert from "./Alert";
 import { shortNumber } from "../pages/leaderBoard";
-// import WMT_video from '../assets/wmt.mp4'
 
 
 const StakingCard: React.FC = () => {
@@ -41,10 +40,7 @@ const StakingCard: React.FC = () => {
             setIsMax(false)
             return;
         }
-        // Check if the value is a valid number and not a negative or invalid input
-        // if (!/^\d*\.?\d*$/.test(value) || Number(value) === 0) {
-        //     return; // Reject invalid input
-        // }
+
         if (!/^(0|[1-9]\d*)(\.\d*)?$/.test(value)) {
             return; // Reject invalid input
         }

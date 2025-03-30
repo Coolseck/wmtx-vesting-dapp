@@ -1,24 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import Web3 from "web3";
-
-import tokenABI from '../utils/abis/token.json';
+import { Link } from "react-router-dom";
 
 import Logo_white from "../assets/img/logo-white.svg";
 import Logo_black from "../assets/img/logo-black.svg";
 import { ConnectWalletButton } from "../utils/lib/connect-button";
-import { MoonIcon, SunIcon, WalletIcon } from "lucide-react";
+import { MoonIcon, SunIcon } from "lucide-react";
 import { useWalletContext } from "../utils/context/walletContext";
-import { shortNumber } from "../pages/leaderBoard";
+// import { shortNumber } from "../pages/leaderBoard";
 
 const Nav: React.FC = () => {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const [isDarkMode, setIsDarkMode] = useState(true);
-	const [balance, setBalance] = useState<number>(0.00);
-	const location = useLocation();
+	// const [balance, setBalance] = useState<number>(0.00);
+	// const location = useLocation();
 	// Function to check if the link is active
-	const isActive = (path: string) => location.pathname === path;
-	const { data, updateDarkMode } = useWalletContext();
+	// const isActive = (path: string) => location.pathname === path;
+	const { updateDarkMode } = useWalletContext();
 
 	useEffect(() => {
 		const html = document.documentElement;
@@ -31,19 +28,19 @@ const Nav: React.FC = () => {
 		}
 	}, [isDarkMode]);
 
-	const fetchBalance = async () => {
-		const web3 = new Web3(window.ethereum);
-		const tokenContractAddress = import.meta.env.VITE_TOKEN_CA;
-		const tokenContract = new web3.eth.Contract(tokenABI, tokenContractAddress);
+	// const fetchBalance = async () => {
+	// 	const web3 = new Web3(window.ethereum);
+	// 	const tokenContractAddress = import.meta.env.VITE_TOKEN_CA;
+	// 	const tokenContract = new web3.eth.Contract(tokenABI, tokenContractAddress);
 
-		const tokenBalance: any = await tokenContract.methods.balanceOf(data.address).call();
-		const formattedBalance = web3.utils.fromWei(tokenBalance, "ether"); // Convert from Wei to Ether for readability
-		setBalance(Number(formattedBalance));
-	}
+	// 	const tokenBalance: any = await tokenContract.methods.balanceOf(data.address).call();
+	// 	const formattedBalance = web3.utils.fromWei(tokenBalance, "ether"); // Convert from Wei to Ether for readability
+	// 	setBalance(Number(formattedBalance));
+	// }
 
-	useEffect(() => {
-		fetchBalance();
-	}, [data])
+	// useEffect(() => {
+	// 	fetchBalance();
+	// }, [data])
 
 	const handleDark = () => {
 		setIsDarkMode(!isDarkMode);
@@ -113,7 +110,7 @@ const Nav: React.FC = () => {
 			{/* Right side: Desktop Navigation */}
 			<div className="justify-end h-[60px] 2xl:w-[1280px] 2xl:mx-auto md:px-8 2xl:px-0 px-4 hidden md:flex">
 				<nav className="flex items-center space-x-8 font-[400]">
-					<Link to="/" className={`hover:border-b hover:border-b-primary text-sm ${isActive("/") ? "border-b border-b-primary" : ""
+					{/* <Link to="/" className={`hover:border-b hover:border-b-primary text-sm ${isActive("/") ? "border-b border-b-primary" : ""
 
 						}`}>
 						EVM Staking
@@ -122,7 +119,7 @@ const Nav: React.FC = () => {
 
 						}`}>
 						Leaderboard
-					</Link>
+					</Link> */}
 					<div
 						onClick={handleDark}
 						className="border border-[#525252] rounded-full p-2 cursor-pointer"
@@ -139,7 +136,7 @@ const Nav: React.FC = () => {
 			{isMenuOpen && (
 				<div className="absolute top-[60px] left-0 w-full bg-primary-bg z-50 h-[calc(100vh-60px)] flex flex-col justify-between py-8 px-4">
 					<nav className="flex flex-col space-y-6 pb-8">
-						<div className="text-xl">Stake WMTx</div>
+						{/* <div className="text-xl">Stake WMTx</div>
 						<Link
 							to="/"
 							className={`text-xl hover:text-gray-300 pl-4 ${isActive("/") ? "" : ""
@@ -155,7 +152,7 @@ const Nav: React.FC = () => {
 							onClick={() => setIsMenuOpen(false)}
 						>
 							Leaderboard
-						</Link>
+						</Link> */}
 						<div className={`flex flex-row justify-between items-center px-8 h-[64px] rounded-xl !mt-12 bg-card-bg`}>
 							<div className="flex flex-row space-x-4">
 								{isDarkMode ? <MoonIcon /> : <SunIcon />}
@@ -174,13 +171,13 @@ const Nav: React.FC = () => {
 						</div>
 					</nav>
 					<div className="w-full flex flex-col justify-center gap-8">
-						<div className={`px-8 py-4 h-[76px] rounded-xl  flex flex-row gap-4 bg-card-bg`}>
+						{/* <div className={`px-8 py-4 h-[76px] rounded-xl  flex flex-row gap-4 bg-card-bg`}>
 							<WalletIcon />
 							<div className="flex flex-col">
 								<div className=" text-lg font-bold">{shortNumber(balance)} WMTx</div>
 								<div className="text-sm text-light">Wallet balance</div>
 							</div>
-						</div>
+						</div> */}
 						<ConnectWalletButton className="bg-[#fff533] hover: text-black px-4 py-4 rounded-full font-semibold flex flex-row gap-1 w-full justify-center" />
 					</div>
 				</div>
