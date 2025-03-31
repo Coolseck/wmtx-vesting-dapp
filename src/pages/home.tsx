@@ -11,24 +11,38 @@ import InfoCard from "../components/InfoCard";
 import Modal from "../components/Modal";
 import Alert from "../components/Alert";
 import { shortNumber } from "../pages/leaderBoard";
-import { InfoIcon } from "lucide-react";
+import { CopyIcon, InfoIcon } from "lucide-react";
 
 import Tier_dark_img from '../assets/img/tier-dark-icon.png'
 import Tier_light_img from '../assets/img/tier-light-icon.png'
+import PopoverModal from "../components/PopoverModal";
 
 const Home: React.FC = () => {
 
     const [balance, setBalance] = useState<number | string>("-");
-    const [amount, setAmount] = useState<any>("");
+    // const [amount, setAmount] = useState<any>("");
     const [stakeAmount, setStakeAmount] = useState<number | string>("-");
     const [reward, setReward] = useState<number | string>("-");
     const [stakingDuration, setStakingDuration] = useState<number | string>("-");
+    const [copied, setCopied] = useState(false);
+    const valueToCopy = "abc123earvuin3q4rnhnwe8fu9023r9";
+
+    const handleCopy = () => {
+        navigator.clipboard.writeText(valueToCopy).then(() => {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000); // Reset after 2 sec
+        });
+    };
 
     const [modalStatus, setModalStatus] = useState('closed');
+    const [isPopoverModal, setIsPopoverModal] = useState(false);
+    const [isClaimPopModal, setIsClaimPopModal] = useState(false);
+    const [isExchangePopModal, setIsExchangePopModal] = useState(false);
+    const [isConfirmTxPopModal, setIsConfirmTxPopModal] = useState(false);
+    const [isClaimed, setIsClaimed] = useState(false);
     const [err, setErr] = useState({
         isErr: false, errMsg: ''
     });
-    const [isMax, setIsMax] = useState<boolean>(true);
     const { data, isDark } = useWalletContext();
 
 
@@ -36,40 +50,13 @@ const Home: React.FC = () => {
     const contractAddress = import.meta.env.VITE_STAKE_CA;
     const tokenContractAddress = import.meta.env.VITE_TOKEN_CA;
 
-    const handleInputAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        if (value === "") {
-            setAmount(value);
-            setIsMax(false)
-            return;
-        }
-
-        if (!/^(0|[1-9]\d*)(\.\d*)?$/.test(value)) {
-            return; // Reject invalid input
-        }
-        setAmount(value);
-        setIsMax(false);
-    };
-
-    const handleMax = () => {
-        if (isMax || !data.address) {
-            setAmount('')
-        } else {
-            setAmount(balance)
-        }
-        setIsMax(!isMax);
-    }
-
     const fetchStakingData = async () => {
-        if (!amount) {
-            setIsMax(false)
-        }
         try {
             if (!data.address) {
                 setStakeAmount('-');
                 setReward('-');
                 setStakingDuration('-');
-                setAmount('');
+                // setAmount('');
                 setBalance('-')
                 return
             }
@@ -128,86 +115,96 @@ const Home: React.FC = () => {
         setModalStatus('opened');
     }
 
-    const handleStake = async () => {
-        if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
-            setErr({
-                isErr: true,
-                errMsg: `Please enter a valid amount to stake.`,
-            });
-            return;
-        }
+    // const handleStake = async () => {
+    //     if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
+    //         setErr({
+    //             isErr: true,
+    //             errMsg: `Please enter a valid amount to stake.`,
+    //         });
+    //         return;
+    //     }
 
-        if (Number(amount) > Number(balance)) {
-            setErr({
-                isErr: true,
-                errMsg: `You have insufficient balance to stake !!!`,
-            });
-            setAmount('')
-            setIsMax(false);
-            return
-        }
+    //     if (Number(amount) > Number(balance)) {
+    //         setErr({
+    //             isErr: true,
+    //             errMsg: `You have insufficient balance to stake !!!`,
+    //         });
+    //         setAmount('')
+    //         return
+    //     }
 
+    //     try {
+    //         // Ensure the wallet is connected
+    //         if (!data.address) {
+    //             setErr({
+    //                 isErr: true,
+    //                 errMsg: `Please connect your wallet first.`,
+    //             });
+    //             return;
+    //         }
+
+    //         // Ensure window.ethereum is available
+    //         if (typeof window.ethereum === "undefined") {
+    //             setErr({
+    //                 isErr: true,
+    //                 errMsg: `Please install MetaMask or connect an Ethereum wallet.`,
+    //             });
+    //             return;
+    //         }
+
+    //         setModalStatus('loading');
+
+    //         // Initialize Web3
+    //         const web3 = new Web3(window.ethereum);
+    //         await window.ethereum.request({ method: "eth_requestAccounts" }); // Request user accounts
+    //         const accounts = await web3.eth.getAccounts();
+    //         const account = accounts[0]; // Get the user's account address
+
+    //         const stakingContract = new web3.eth.Contract(contractABI, contractAddress);
+    //         const tokenContract = new web3.eth.Contract(tokenABI, tokenContractAddress);
+
+    //         const stakeAmount = web3.utils.toWei(amount, "ether");
+
+    //         // Approve the staking contract to spend tokens
+    //         const approvalTx = await tokenContract.methods.approve(contractAddress, stakeAmount).send({ from: account });
+    //         console.log("Approval transaction sent:", approvalTx.transactionHash);
+
+    //         // Call the stake function
+    //         const stakeTx = await stakingContract.methods.stake(stakeAmount).send({ from: account });
+    //         fetchStakingData();
+    //         console.log("Stake transaction sent:", stakeTx.transactionHash);
+
+    //         setErr({
+    //             isErr: true,
+    //             errMsg: `Tokens staked successfully!`,
+    //         });
+    //         setAmount(''); // Reset the input field
+    //     } catch (error) {
+    //         console.error("Error during staking:", error);
+    //         setErr({
+    //             isErr: true,
+    //             errMsg: `An error occurred during staking. Please try again.`,
+    //         });
+    //     } finally {
+    //         handleCloseModal();
+    //     }
+    // };
+
+    const handleClaim = () => {
         try {
-            // Ensure the wallet is connected
-            if (!data.address) {
-                setErr({
-                    isErr: true,
-                    errMsg: `Please connect your wallet first.`,
-                });
-                return;
-            }
-
-            // Ensure window.ethereum is available
-            if (typeof window.ethereum === "undefined") {
-                setErr({
-                    isErr: true,
-                    errMsg: `Please install MetaMask or connect an Ethereum wallet.`,
-                });
-                return;
-            }
-
-            setModalStatus('loading');
-
-            // Initialize Web3
-            const web3 = new Web3(window.ethereum);
-            await window.ethereum.request({ method: "eth_requestAccounts" }); // Request user accounts
-            const accounts = await web3.eth.getAccounts();
-            const account = accounts[0]; // Get the user's account address
-
-            const stakingContract = new web3.eth.Contract(contractABI, contractAddress);
-            const tokenContract = new web3.eth.Contract(tokenABI, tokenContractAddress);
-
-            const stakeAmount = web3.utils.toWei(amount, "ether");
-
-            // Approve the staking contract to spend tokens
-            const approvalTx = await tokenContract.methods.approve(contractAddress, stakeAmount).send({ from: account });
-            console.log("Approval transaction sent:", approvalTx.transactionHash);
-
-            // Call the stake function
-            const stakeTx = await stakingContract.methods.stake(stakeAmount).send({ from: account });
-            fetchStakingData();
-            console.log("Stake transaction sent:", stakeTx.transactionHash);
-
-            setErr({
-                isErr: true,
-                errMsg: `Tokens staked successfully!`,
-            });
-            setAmount(''); // Reset the input field
-            setIsMax(false)
+            console.log('claiming....')
         } catch (error) {
-            console.error("Error during staking:", error);
-            setErr({
-                isErr: true,
-                errMsg: `An error occurred during staking. Please try again.`,
-            });
+            console.error(error)
         } finally {
-            handleCloseModal();
+            setIsClaimPopModal(false);
+            setIsClaimed(true);
         }
-    };
+    }
 
     const handleCloseModal = () => {
         setModalStatus('closed');
-        setAmount('')
+        setIsClaimed(false)
+        // setAmount('')
     }
 
     return (
@@ -276,64 +273,156 @@ const Home: React.FC = () => {
             </div>
             <Modal isOpen={modalStatus} onClose={handleCloseModal}>
                 <h2 className="text-[18px] font-semibold text-primary flex justify-center">Network Founder Reward</h2>
-                <InfoCard label='claim' value={balance} />
+                <div className="text-[14px] text-light-text mt-4">You're among the first to join our new World Mobile USA and Global Access plans - making you a pioneer in our movement to decentralize connectivity.</div>
+                <div className={`rounded-3xl bg-card-bg mx-auto flex flex-col gap-6 md:px-6 md:py-8 p-6 w-full`}>
+                    <div className="flex flex-row justify-between items-center">
+                        <div className={`text-primary font-[600]`}>Total reward</div>
+                        <InfoIcon onClick={() => setIsPopoverModal(true)} className={`text-primary`} />
+                        <PopoverModal isOpen={isPopoverModal} onClose={() => setIsPopoverModal(false)} title='Total reward'
+                        // buttonActionTitle="Test" actionButtonstyle='bg-primary text-primary-bg'
+                        >
+                            <div className="text-light-text text-[14px] flex flex-col gap-4">
+                                <div>Includes all World Mobile Bonus Tokens (WMTb): locked, unlocked, and exchanged.</div>
+                                <div>Locked tokens can only be used for staking until their unlock date. Post-unlock, you may exchange WMTb with WMTx at a 1:1 value.</div>
+                            </div>
+                        </PopoverModal>
+                    </div>
+                    <div className={`font-bold text-primary text-4xl`}>{(shortNumber(Number(balance === '-' ? 0 : balance)) + 'WMTb')}</div>
+                </div>
                 <div className="flex flex-col w-full gap-1">
-                    <div className="text-primary">Amount to claim</div>
-                    <div className="flex flex-row items-center justify-between border border-[#5b5b5b] rounded-lg pr-4 bg-card-bg">
-                        <input
-                            type="number"
-                            placeholder="0.00"
-                            value={amount}
-                            onChange={(e) => handleInputAmount(e)}
-                            className="w-full font-semibold placeholder:text-[#5b5b5b] border-none bg-inherit focus:ring-0 outline-none rounded-lg text-primary"
-                            inputMode="decimal" // Suggests a numeric keyboard on mobile devices
-                            pattern="\d*\.?\d*"
-                        />
-                        <div className="flex flex-row gap-2 items-center">
-                            <div className="text-primary">WMTx</div>
-                            <button disabled={balance === '0' || balance === '-'} onClick={handleMax} className="text-black px-3 py-[1px] bg-[#fff533] rounded-2xl cursor-pointer disabled:cursor-not-allowed disabled:bg-[#5b5b5b] text-sm">
-                                {
-                                    isMax ? 'Clear' : 'Max'
-                                }
-                            </button>
+                    <div className="text-primary">Contract</div>
+                    <div className="rounded-3xl bg-card-bg mx-auto flex flex-col gap-6 p-6 w-full mt-4 text-primary">
+                        <div className="text-[16px]">US Advanced SIM plan - 12 month</div>
+                        <div className="flex flex-row w-full">
+                            <div className="flex flex-col gap-2 w-[50%]">
+                                <div className="text-[14px]">Unlock date</div>
+                                <div className="text-[16px]">18 Mar 2025</div>
+                            </div>
+                            <div className="flex flex-col gap-2 w-[50%]">
+                                <div className="text-[14px]">Reward</div>
+                                <div className="text-[16px]">150 WMTb</div>
+                            </div>
                         </div>
+                        {
+                            !isClaimed ?
+                                (data.address ?
+                                    <button
+                                        onClick={() => setIsClaimPopModal(true)}
+                                        className={`rounded-3xl py-2 px-4 text-[16px] bg-[#fff533] text-black hover:text-[#5b5b5b] font-bold flex flex-row items-center justify-center gap-1 w-max`}
+                                    >
+                                        Claim
+                                    </button> :
+                                    <div className="flex items-center justify-center w-full">
+                                        <ConnectWalletButton className="bg-black hover:bg-[#fff533] hover:text-black hover:border-yellow-300 text-white px-4 py-2 rounded-full border border-[#525252] font-semibold flex flex-row gap-1" />
+                                    </div>) :
+                                <div className="flex flex-col gap-3">
+                                    <div className="w-max rounded-3xl py-2 px-4 text-[16px] text-light-border border border-light-border cursor-not-allowed">Exchanged</div>
+                                    <div onClick={() => setIsConfirmTxPopModal(true)} className="w-max rounded-3xl py-2 px-4 text-[16px] text-primary border border-light-border hover:text-[#5b5b5b] cursor-pointer">View confirmation of exchange</div>
+                                    <PopoverModal
+                                        isOpen={isConfirmTxPopModal}
+                                        onClose={() => setIsConfirmTxPopModal(false)}
+                                        title='Confirmation of exchange'
+                                    >
+                                        <div className="flex flex-col gap-4">
+                                            <div className="space-y-1">
+                                                <div className="text-[14px] text-light">Contract</div>
+                                                <div className="text-[16px] text-primary">US Advanced SIM plan - 12 month</div>
+                                            </div>
+                                            <div className="flex flex-row w-full">
+                                                <div className="space-y-1 w-[50%]">
+                                                    <div className="text-[14px] text-light">Unlock date</div>
+                                                    <div className="text-[16px] text-primary">18 Mar 2025</div>
+                                                </div>
+                                                <div className="space-y-1 w-[50%]">
+                                                    <div className="text-[14px] text-light">Reward</div>
+                                                    <div className="text-[16px] text-primary">150 WMTb</div>
+                                                </div>
+                                            </div>
+                                            <div className="space-y-1">
+                                                <div className="text-[14px] text-light">Transaction ID</div>
+                                                <div className="flex flex-row gap-2">
+                                                    <div className="text-[16px] text-primary">{valueToCopy}</div>
+                                                    <div onClick={handleCopy}>
+                                                        <CopyIcon />
+                                                    </div>
+                                                </div>
+                                                {copied && <span className="text-sm text-green-500">Copied!</span>}
+                                            </div>
+                                        </div>
+                                    </PopoverModal>
+                                </div>
+                        }
+                        <PopoverModal
+                            isOpen={isClaimPopModal}
+                            onClose={() => setIsClaimPopModal(false)}
+                            title='Claiming your World Mobile Bonus Tokens'
+                            buttonActionTitle="I understand and claim"
+                            actionButtonstyle='bg-primary text-primary-bg'
+                            buttonAction={handleClaim}
+                        >
+                            <div className="text-light-text text-[14px] flex flex-col gap-4">
+                                <div>Claiming your World Mobile Bonus Tokens (WMTb) will transfer them to the wallet you have currently connected. <span className="font-semibold">You cannot transfer them to another wallet before they unlock.</span> Once unlocked, you may exchange your WMTb for WMTx and use them as regular tokens.</div>
+                                <div>Please ensure you claim your WMTb to a wallet you can use for the entire locking period.</div>
+                            </div>
+                        </PopoverModal>
                     </div>
+                    {
+                        isClaimed &&
+                        <div>
+                            <div className="rounded-3xl bg-card-bg mx-auto flex flex-col gap-6 p-6 w-full mt-1 text-primary">
+                                <div className="text-[16px]">US Advanced SIM plan - 12 month</div>
+                                <div className="flex flex-row w-full">
+                                    <div className="flex flex-col gap-2 w-[50%]">
+                                        <div className="text-[14px]">Unlock date</div>
+                                        <div className="text-[16px]">18 Mar 2025</div>
+                                    </div>
+                                    <div className="flex flex-col gap-2 w-[50%]">
+                                        <div className="text-[14px]">Reward</div>
+                                        <div className="text-[16px]">150 WMTb</div>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setIsExchangePopModal(true)}
+                                    className={`rounded-3xl py-2 px-4 text-[16px] bg-[#fff533] text-black hover:text-[#5b5b5b] font-bold flex flex-row items-center justify-center gap-1 w-max`}
+                                >
+                                    Exchange
+                                </button>
+                                <PopoverModal
+                                    isOpen={isExchangePopModal}
+                                    onClose={() => setIsExchangePopModal(false)}
+                                    title='Exchange your World Mobile Bonus Tokens'
+                                    buttonActionTitle="Exchange"
+                                    actionButtonstyle='bg-[#fff533] text-black'
+                                // buttonAction={handleClaim}
+                                >
+                                    <div className="text-light-text text-[14px] flex flex-col gap-4">
+                                        <div>Your WMTb are unlocked. They can now be exchanged for WMTx. This will permanently burn your WMTb and exchange them for an equal amount of WMTx.</div>
+                                    </div>
+                                </PopoverModal>
+                            </div>
+                            <div className="rounded-3xl bg-card-bg mx-auto flex flex-col gap-6 p-6 w-full mt-2 text-primary">
+                                <div className="text-[16px]">Global Access plan - 6 month</div>
+                                <div className="flex flex-row w-full">
+                                    <div className="flex flex-col gap-2 w-[50%]">
+                                        <div className="text-[14px]">Unlock date</div>
+                                        <div className="text-[16px]">18 Mar 2025</div>
+                                    </div>
+                                    <div className="flex flex-col gap-2 w-[50%]">
+                                        <div className="text-[14px]">Reward</div>
+                                        <div className="text-[16px]">150 WMTb</div>
+                                    </div>
+                                </div>
+                                <div className="w-max rounded-3xl py-2 px-4 text-[16px] text-light-border border border-light-border cursor-not-allowed">Locked</div>
+                            </div>
+                        </div>
+                    }
                 </div>
-                <div className="flex flex-col gap-4 w-full">
-                    <div className="flex flex-col gap-4 rounded-xl">
-                        <div className="flex flex-row justify-between text-sm">
-                            <div className="flex flex-row gap-2 items-center text-[#A3A3A3]">
-                                Total Staked
-                            </div>
-                            <p className="text-primary">{shortNumber(Number(stakeAmount))} WMTx</p>
-                        </div>
-
-                        <div className="flex flex-row justify-between text-sm">
-                            <div className="flex flex-row gap-2 items-center text-[#A3A3A3]">
-                                <p>My Reward</p>
-                            </div>
-                            <p className="text-primary">{shortNumber(Number(reward))} WMTx</p>
-                        </div>
-
-                        <div className="flex flex-row justify-between text-sm">
-                            <div className="flex flex-row gap-2 items-center text-[#A3A3A3]">
-                                <p>Staking Duration</p>
-                            </div>
-                            <p className="text-primary">{stakingDuration} Days</p>
-                        </div>
-                    </div>
+                <div
+                    onClick={handleCloseModal}
+                    className="border border-light-border rounded-full text-primary h-[56px] flex justify-center items-center cursor-pointer hover:text-[#525252]"
+                >
+                    Close
                 </div>
-                {
-                    data.address ?
-                        <button className={`rounded-3xl py-2 px-4 text-[16px] bg-[#fff533] text-black hover:text-[#5b5b5b] font-bold flex flex-row items-center justify-center gap-1 w-max`} onClick={handleStake}>
-                            <div>
-                                Claim
-                            </div>
-                        </button> :
-                        <div className="flex items-center justify-center w-full">
-                            <ConnectWalletButton className="bg-black hover:bg-[#fff533] hover:text-black hover:border-yellow-300 text-white px-4 py-2 rounded-full border border-[#525252] font-semibold flex flex-row gap-1" />
-                        </div>
-                }
             </Modal>
             {err.isErr && <Alert data={err.errMsg} onClose={() => setErr({ isErr: false, errMsg: '' })} />}
         </div>

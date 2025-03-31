@@ -25,9 +25,9 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
     if (isOpen === 'closed') return null;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-80 z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-70 z-50">
             {/* Modal Content */}
-            <div className="fixed top-0 right-0 bg-primary-bg px-4 py-8 min-[390px]:w-[390px] w-full h-screen animate-fadeIn flex flex-col justify-between items-center">
+            <div className="fixed top-0 right-0 bg-primary-bg px-4 py-8 min-[390px]:w-[390px] w-full h-full overflow-y-auto min-h-screen animate-fadeIn flex flex-col justify-between items-center">
                 {/* Close Button */}
                 <button
                     onClick={onClose}
@@ -36,7 +36,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
                     <XIcon />
                 </button>
                 {/* Modal Body */}
-                <div className="w-full flex-1 flex flex-col justify-start space-y-6">
+                <div className="w-full flex-1 flex flex-col justify-start space-y-8">
                     {children}
                 </div>
             </div>

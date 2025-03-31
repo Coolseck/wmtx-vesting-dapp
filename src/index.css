@@ -10,6 +10,7 @@
     --color-modal-bg: #262626;
     --color-primary-bg: #0A0A0A;
     --color-card-bg: #171717;
+    --color-light-text: #F5F5F5;
 
     [data-rk] .ju367vb6 {
         --rk-colors-modalBackground: black !important;
@@ -24,6 +25,7 @@
     --color-modal-bg: white;
     --color-primary-bg: #FAFAFA;
     --color-card-bg: white;
+    --color-light-text: #171717;
 
     [data-rk] .ju367vb6 {
         --rk-colors-modalBackground: white !important;

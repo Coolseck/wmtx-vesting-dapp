@@ -24,7 +24,7 @@ const Alert: React.FC<{ data: string, onClose: () => void }> = ({ data, onClose 
                     {/* Close Button */}
                     <button
                         onClick={onClose}
-                        className="absolute top-3 right-3 text-primary bg-transparent hover:text-light rounded-full text-sm w-8 h-8 flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                        className="absolute top-3 right-3 text-primary bg-transparent hover:text-[#525252] rounded-full text-sm w-8 h-8 flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
                     >
                         <svg
                             className="w-3 h-3"
