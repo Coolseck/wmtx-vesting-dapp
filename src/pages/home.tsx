@@ -18,7 +18,6 @@ import Tier_light_img from '../assets/img/tier-light-icon.png'
 
 const Home: React.FC = () => {
 
-    const [activeTab, setActiveTab] = useState<"stake" | "unstake">("stake");
     const [balance, setBalance] = useState<number | string>("-");
     const [amount, setAmount] = useState<any>("");
     const [stakeAmount, setStakeAmount] = useState<number | string>("-");
@@ -56,11 +55,7 @@ const Home: React.FC = () => {
         if (isMax || !data.address) {
             setAmount('')
         } else {
-            if (activeTab === 'stake') {
-                setAmount(balance)
-            } else {
-                setAmount(stakeAmount)
-            }
+            setAmount(balance)
         }
         setIsMax(!isMax);
     }
@@ -99,7 +94,6 @@ const Home: React.FC = () => {
 
             // Fetch stake data from the contract
             const stakeData: any = await stakingContract.methods.stakes(data.address).call();
-            console.log(stakeData)
             const currentTime = Date.now();
             const startTime: number = Number(web3.utils.fromWei(stakeData.startTime, 0));
             if (startTime === 0) {
@@ -130,15 +124,7 @@ const Home: React.FC = () => {
         fetchStakingData();
     }, [data]);
 
-    const handleStakeAction = () => {
-        setActiveTab('stake');
-        // setAmount(balance);
-        setModalStatus('opened');
-    }
-
-    const handleUnstakeAction = () => {
-        setActiveTab('unstake');
-        // setAmount(stakeAmount);
+    const handleClaimAction = () => {
         setModalStatus('opened');
     }
 
@@ -219,96 +205,6 @@ const Home: React.FC = () => {
         }
     };
 
-    const handleUnstake = async () => {
-        if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
-            setErr({
-                isErr: true,
-                errMsg: `Please enter a valid amount to unstake.`,
-            });
-            return;
-        }
-        try {
-            // Ensure the wallet is connected
-            if (!data.address) {
-                setErr({
-                    isErr: true,
-                    errMsg: `Please connect your wallet first.`,
-                });
-                return;
-            }
-
-            // Ensure window.ethereum is available
-            if (typeof window.ethereum === "undefined") {
-                setErr({
-                    isErr: true,
-                    errMsg: `Please install MetaMask or connect an Ethereum wallet.`,
-                });
-                return;
-            }
-
-            setModalStatus('loading');
-
-            // Initialize Web3
-            const web3 = new Web3(window.ethereum);
-            await window.ethereum.request({ method: "eth_requestAccounts" }); // Request user accounts
-            const accounts = await web3.eth.getAccounts();
-            const account = accounts[0]; // Get the user's account address
-
-            const stakingContract = new web3.eth.Contract(contractABI, contractAddress);
-
-            // Check user's stake data (amount staked and rewards)
-            const stakeData: any = await stakingContract.methods.stakes(account).call();
-            const stakedAmount = stakeData.amount;
-            const stakedAmountDecimal = web3.utils.fromWei(stakedAmount, "ether");
-
-            if (Number(stakedAmountDecimal) === 0) {
-                setErr({
-                    isErr: true,
-                    errMsg: `You don't have any tokens staked to withdraw.`,
-                });
-                setAmount('')
-                setIsMax(false);
-                return;
-            }
-
-            if (Number(amount) > Number(stakedAmountDecimal)) {
-                setErr({
-                    isErr: true,
-                    errMsg: `You have insufficient stake to withdraw !!!`,
-                });
-                setAmount('')
-                setIsMax(false);
-                return;
-            }
-
-            if (Number(stakedAmountDecimal) === Number(amount)) {
-                // unstake call from the staking contract
-                const unstakeTx = await stakingContract.methods.unstake().send({ from: account });
-                console.log("Unstake transaction sent:", unstakeTx.transactionHash);
-            } else {
-                // partialUnstake call from the staking contract
-                const stakeAmount = web3.utils.toWei(amount, "ether");
-                const unstakeTx = await stakingContract.methods.partialUnstake(stakeAmount).send({ from: account });
-                console.log("Unstake transaction sent:", unstakeTx.transactionHash);
-            }
-            fetchStakingData();
-            setErr({
-                isErr: true,
-                errMsg: `Tokens unstaked successfully!`,
-            });
-            setAmount('')
-            setIsMax(false)
-        } catch (error) {
-            console.error("Error during unstaking:", error);
-            setErr({
-                isErr: true,
-                errMsg: `An error occurred during unstaking. Please try again.`,
-            });
-        } finally {
-            handleCloseModal();
-        }
-    };
-
     const handleCloseModal = () => {
         setModalStatus('closed');
         setAmount('')
@@ -320,17 +216,17 @@ const Home: React.FC = () => {
                 <div className="w-full 2xl:w-[1280px] 2xl:mx-auto md:px-8 2xl:px-0 px-4 text-primary pt-20 gap-20">
                     <div className="w-full md:pt-[80px] pt-[30px] bg-primary-bg">
                         <div className="space-y-6">
-                            <InfoCard disabled={!data?.address} label='reward' value={reward} viewDetail={`https://sepolia.etherscan.io/address/${import.meta.env.VITE_STAKE_CA}#tokentxns`} stakeAction={handleStakeAction} unstakeAction={handleUnstakeAction} staked={stakeAmount !== '-' && Number(stakeAmount) !== 0} />
+                            <InfoCard disabled={!data?.address} label='total-reward' value={reward} viewDetail={`https://sepolia.etherscan.io/address/${import.meta.env.VITE_STAKE_CA}#tokentxns`} />
                             {/* <div className="flex lg:hidden lg:flex-row flex-col gap-6">
                                 <div className="flex md:flex-row flex-col gap-6">
-                                    <InfoCard disabled={!data?.address} label='stake' value={stakeAmount} viewDetail={`https://sepolia.etherscan.io/address/${import.meta.env.VITE_STAKE_CA}#tokentxns`} stakeAction={handleStakeAction} unstakeAction={handleUnstakeAction} staked={stakeAmount !== '-' && Number(stakeAmount) !== 0} />
+                                    <InfoCard disabled={!data?.address} label='stake' value={stakeAmount} viewDetail={`https://sepolia.etherscan.io/address/${import.meta.env.VITE_STAKE_CA}#tokentxns`} stakeAction={handleStakeAction} unstakeAction={handleUnstakeAction} />
                                     <InfoCard disabled={!data?.address} label='duration' value={stakingDuration} viewDetail={`https://sepolia.etherscan.io/address/${import.meta.env.VITE_STAKE_CA}#tokentxns`} />
                                 </div>
-                                <InfoCard disabled={!data?.address} label='balance' value={balance} viewDetail={`https://sepolia.etherscan.io/address/${data?.address}`} stakeAction={handleStakeAction} unstakeAction={handleUnstakeAction} staked={stakeAmount !== '-' && Number(stakeAmount) !== 0} />
+                                <InfoCard disabled={!data?.address} label='balance' value={balance} viewDetail={`https://sepolia.etherscan.io/address/${data?.address}`} stakeAction={handleStakeAction} unstakeAction={handleUnstakeAction} />
                             </div> */}
                             <div className="grid md:grid-cols-2 grid-cols-1 gap-6">
-                                <InfoCard disabled={!data?.address} label='stake' value={stakeAmount} viewDetail={`https://sepolia.etherscan.io/address/${import.meta.env.VITE_STAKE_CA}#tokentxns`} stakeAction={handleStakeAction} unstakeAction={handleUnstakeAction} staked={stakeAmount !== '-' && Number(stakeAmount) !== 0} />
-                                <InfoCard disabled={!data?.address} label='duration' value={stakingDuration} viewDetail={`https://sepolia.etherscan.io/address/${import.meta.env.VITE_STAKE_CA}#tokentxns`}>
+                                <InfoCard disabled={!data?.address} label='premier-staking' value={stakeAmount} viewDetail={`https://sepolia.etherscan.io/address/${import.meta.env.VITE_STAKE_CA}#tokentxns`} />
+                                <InfoCard disabled={!data?.address} label='network-founder-reward' value={stakingDuration} viewDetail={`https://sepolia.etherscan.io/address/${import.meta.env.VITE_STAKE_CA}#tokentxns`} claimAction={handleClaimAction}>
                                     <div className="text-primary text-[14px] flex flex-col gap-4">
                                         <div className="font-bold">You've been awarded WMTb - World Mobile bonus tokens, with a 1:1 value to WMTx.</div>
                                         <div>These tokens can be staked in Core and Premier staking programs just like WMTx. They remain locked until the official unlock date.</div>
@@ -338,8 +234,8 @@ const Home: React.FC = () => {
                                         <div>Once unlocked, they can be exchanged for WMTx.</div>
                                     </div>
                                 </InfoCard>
-                                <InfoCard disabled={!data?.address} label='balance' value={balance} viewDetail={`https://sepolia.etherscan.io/address/${data?.address}`} stakeAction={handleStakeAction} unstakeAction={handleUnstakeAction} staked={stakeAmount !== '-' && Number(stakeAmount) !== 0} />
-                                <InfoCard disabled={!data?.address} label='balance' value={balance} viewDetail={`https://sepolia.etherscan.io/address/${data?.address}`} stakeAction={handleStakeAction} unstakeAction={handleUnstakeAction} staked={stakeAmount !== '-' && Number(stakeAmount) !== 0} />
+                                <InfoCard disabled={!data?.address} label='airnodes' value={balance} viewDetail={`https://sepolia.etherscan.io/address/${data?.address}`} />
+                                <InfoCard disabled={!data?.address} label='core-staking' value={balance} viewDetail={`https://sepolia.etherscan.io/address/${data?.address}`} />
                             </div>
                             <div className="grid grid-cols-2 gap-6">
                                 <div className={`rounded-3xl bg-card-bg mx-auto flex flex-col gap-6 md:px-6 md:py-8 p-6 w-full justify-between`}>
@@ -380,9 +276,9 @@ const Home: React.FC = () => {
             </div>
             <Modal isOpen={modalStatus} onClose={handleCloseModal}>
                 <h2 className="text-[18px] font-semibold text-primary flex justify-center">Network Founder Reward</h2>
-                <InfoCard label={activeTab === 'stake' ? 'canstake' : 'canunstake'} value={activeTab === 'stake' ? balance : stakeAmount} />
+                <InfoCard label='claim' value={balance} />
                 <div className="flex flex-col w-full gap-1">
-                    <div className="text-primary">Amount to {activeTab === 'stake' ? 'stake' : 'unstake'}</div>
+                    <div className="text-primary">Amount to claim</div>
                     <div className="flex flex-row items-center justify-between border border-[#5b5b5b] rounded-lg pr-4 bg-card-bg">
                         <input
                             type="number"
@@ -395,7 +291,7 @@ const Home: React.FC = () => {
                         />
                         <div className="flex flex-row gap-2 items-center">
                             <div className="text-primary">WMTx</div>
-                            <button disabled={(activeTab === 'stake' && (balance === '0' || balance === '-')) || (activeTab === 'unstake' && (stakeAmount === '0' || stakeAmount === '-'))} onClick={handleMax} className="text-black px-3 py-[1px] bg-[#fff533] rounded-2xl cursor-pointer disabled:cursor-not-allowed disabled:bg-[#5b5b5b] text-sm">
+                            <button disabled={balance === '0' || balance === '-'} onClick={handleMax} className="text-black px-3 py-[1px] bg-[#fff533] rounded-2xl cursor-pointer disabled:cursor-not-allowed disabled:bg-[#5b5b5b] text-sm">
                                 {
                                     isMax ? 'Clear' : 'Max'
                                 }
@@ -429,9 +325,9 @@ const Home: React.FC = () => {
                 </div>
                 {
                     data.address ?
-                        <button className={`rounded-3xl py-2 px-4 text-[16px] bg-[#fff533] text-black hover:text-[#5b5b5b] font-bold flex flex-row items-center justify-center gap-1 w-max`} onClick={activeTab === 'stake' ? handleStake : handleUnstake}>
+                        <button className={`rounded-3xl py-2 px-4 text-[16px] bg-[#fff533] text-black hover:text-[#5b5b5b] font-bold flex flex-row items-center justify-center gap-1 w-max`} onClick={handleStake}>
                             <div>
-                                {activeTab === 'stake' ? 'Stake WMTx' : 'Unstake WMTx'}
+                                Claim
                             </div>
                         </button> :
                         <div className="flex items-center justify-center w-full">
