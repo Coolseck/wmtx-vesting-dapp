@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 import Logo_white from "../assets/img/logo-white.svg";
 import Logo_black from "../assets/img/logo-black.svg";
@@ -12,9 +12,9 @@ const Nav: React.FC = () => {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const [isDarkMode, setIsDarkMode] = useState(true);
 	// const [balance, setBalance] = useState<number>(0.00);
-	// const location = useLocation();
+	const location = useLocation();
 	// Function to check if the link is active
-	// const isActive = (path: string) => location.pathname === path;
+	const isActive = (path: string) => location.pathname === path;
 	const { updateDarkMode } = useWalletContext();
 
 	useEffect(() => {
@@ -110,16 +110,16 @@ const Nav: React.FC = () => {
 			{/* Right side: Desktop Navigation */}
 			<div className="justify-end h-[60px] 2xl:w-[1280px] 2xl:mx-auto md:px-8 2xl:px-0 px-4 hidden md:flex">
 				<nav className="flex items-center space-x-8 font-[400]">
-					{/* <Link to="/" className={`hover:border-b hover:border-b-primary text-sm ${isActive("/") ? "border-b border-b-primary" : ""
+					<Link to="/" className={`hover:border-b hover:border-b-primary text-sm ${isActive("/") ? "border-b border-b-primary" : ""
 
 						}`}>
-						EVM Staking
+						Claim WMTb
 					</Link>
 					<Link to="/leaderboard" className={`hover:border-b hover:border-b-primary text-sm ${isActive("/leaderboard") ? "border-b border-b-primary" : ""
 
 						}`}>
 						Leaderboard
-					</Link> */}
+					</Link>
 					<div
 						onClick={handleDark}
 						className="border border-[#525252] rounded-full p-2 cursor-pointer"
@@ -136,14 +136,14 @@ const Nav: React.FC = () => {
 			{isMenuOpen && (
 				<div className="absolute top-[60px] left-0 w-full bg-primary-bg z-50 h-[calc(100vh-60px)] flex flex-col justify-between py-8 px-4">
 					<nav className="flex flex-col space-y-6 pb-8">
-						{/* <div className="text-xl">Stake WMTx</div>
+						<div className="text-xl">Claim WMTb</div>
 						<Link
 							to="/"
 							className={`text-xl hover:text-gray-300 pl-4 ${isActive("/") ? "" : ""
 								}`}
 							onClick={() => setIsMenuOpen(false)}
 						>
-							Stake
+							Claim
 						</Link>
 						<Link
 							to="/leaderboard"
@@ -152,7 +152,7 @@ const Nav: React.FC = () => {
 							onClick={() => setIsMenuOpen(false)}
 						>
 							Leaderboard
-						</Link> */}
+						</Link>
 						<div className={`flex flex-row justify-between items-center px-8 h-[64px] rounded-xl !mt-12 bg-card-bg`}>
 							<div className="flex flex-row space-x-4">
 								{isDarkMode ? <MoonIcon /> : <SunIcon />}

@@ -6,6 +6,7 @@ import Footer from "./components/footer";
 import Nav from "./components/nav";
 import Home from "./pages/home";
 import { useWalletContext } from "./utils/context/walletContext";
+import LeaderBoard from "./pages/leaderBoard";
 
 function App() {
 
@@ -29,6 +30,7 @@ function App() {
 				<Nav />
 				<Routes>
 					<Route path='/' element={<Home />} />
+					<Route path='/leaderboard' element={<LeaderBoard />} />
 				</Routes>
 				<Footer />
 			</div>
