@@ -38,13 +38,19 @@ export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({ classN
 					}
 				}, [connected, account?.address, updateData]);
 
-				// Track changes in account?.address and updateData
 				useEffect(() => {
-					if (account?.address && currentAddressRef.current !== account.address) {
-						currentAddressRef.current = account.address;
-						updateData({ connected: true, address: account.address });
+					if (connected === undefined) {
+						updateData({ connected: false, address: '' });
 					}
-				}, [account?.address, updateData]);
+				}, [connected])
+
+				// Track changes in account?.address and updateData
+				// useEffect(() => {
+				// 	if (account?.address && currentAddressRef.current !== account.address) {
+				// 		currentAddressRef.current = account.address;
+				// 		updateData({ connected: true, address: account.address });
+				// 	}
+				// }, [account?.address, updateData]);
 
 				// Handle unsupported chain 
 				useEffect(() => {
@@ -54,14 +60,6 @@ export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({ classN
 						openChainModal(); // Show modal after reload
 					}
 				}, [chain?.unsupported, openChainModal, updateData]);
-
-				// Handle wallet disconnection
-				// useEffect(() => {
-				// 	if (!connected && currentConnectedRef.current) {
-				// 		currentConnectedRef.current = false;
-				// 		updateData({ connected: false, address: '' });
-				// 	}
-				// }, [connected, updateData]);
 
 				return (
 					<div
