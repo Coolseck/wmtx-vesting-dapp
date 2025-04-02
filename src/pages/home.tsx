@@ -343,7 +343,7 @@ const Home: React.FC = () => {
                 <div className="flex flex-col w-full gap-1">
                     <div className="text-primary">Contract</div>
                     <div className="rounded-3xl bg-card-bg mx-auto flex flex-col gap-6 p-6 w-full mt-4 text-primary">
-                        <div className="text-[16px]">US Advanced SIM plan - 12 month</div>
+                        <div className="text-[16px]">US Advanced SIM plan - 12 months</div>
                         <div className="flex flex-row w-full">
                             <div className="flex flex-col gap-2 w-[50%]">
                                 <div className="text-[14px]">Unlock date</div>
@@ -377,7 +377,7 @@ const Home: React.FC = () => {
                                         <div className="flex flex-col gap-4">
                                             <div className="space-y-1">
                                                 <div className="text-[14px] text-light">Contract</div>
-                                                <div className="text-[16px] text-primary">US Advanced SIM plan - 12 month</div>
+                                                <div className="text-[16px] text-primary">US Advanced SIM plan - 12 months</div>
                                             </div>
                                             <div className="flex flex-row w-full">
                                                 <div className="space-y-1 w-[50%]">
@@ -421,7 +421,7 @@ const Home: React.FC = () => {
                         isClaimed &&
                         <div>
                             <div className="rounded-3xl bg-card-bg mx-auto flex flex-col gap-6 p-6 w-full mt-1 text-primary">
-                                <div className="text-[16px]">US Advanced SIM plan - 12 month</div>
+                                <div className="text-[16px]">US Advanced SIM plan - 12 months</div>
                                 <div className="flex flex-row w-full">
                                     <div className="flex flex-col gap-2 w-[50%]">
                                         <div className="text-[14px]">Unlock date</div>
