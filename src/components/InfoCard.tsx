@@ -95,7 +95,7 @@ const InfoCard = ({ disabled, label, value, claimAction, viewDetail, children }:
                     (label === 'total-reward' && !data.address) &&
                     <ConnectWalletButton className={`bg-black hover:bg-[#fff533] hover:text-black hover:border-yellow-300 text-white rounded-full border border-[#525252] font-semibold flex flex-row gap-1 ${label === 'total-reward' ? 'px-6 py-3' : 'px-4 py-2'}`} />
                 }
-                <button disabled={disabled} onClick={handleViewDetails} className={`${label === 'total-reward' ? 'bg-black text-white' : 'text-primary-bg bg-primary'} hover:text-[#5b5b5b] rounded-full border border-[#525252] px-4 py-2 ${disabled ? 'cursor-not-allowed text-[#525252]' : 'cursor-pointer'} flex flex-row justify-center items-center gap-2 w-max`}>
+                <button disabled={label === 'network-founder-reward' ? false : disabled} onClick={handleViewDetails} className={`${label === 'total-reward' ? 'bg-black text-white' : 'text-primary-bg bg-primary'} hover:text-[#5b5b5b] rounded-full border border-[#525252] px-4 py-2 ${label !== 'network-founder-reward' && disabled ? 'cursor-not-allowed text-[#525252]' : 'cursor-pointer'} flex flex-row justify-center items-center gap-2 w-max`}>
                     <div>{getViewButtonContent()}</div>
                     {label === 'airnodes' && <SquareArrowOutUpRight className="font-bold" />}
                 </button>

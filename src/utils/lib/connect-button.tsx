@@ -5,9 +5,10 @@ import { WalletIcon } from "lucide-react";
 
 interface ConnectWalletButtonProps {
 	className?: string;
+	buttonTitle?: string;
 }
 
-export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({ className }) => {
+export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({ className, buttonTitle }) => {
 	const { updateData } = useWalletContext();
 	const currentAddressRef = useRef<string | null>(null);
 	const currentConnectedRef = useRef<boolean | null>(true);
@@ -81,7 +82,7 @@ export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({ classN
 										className={className}
 									>
 										<WalletIcon className="hidden md:block" />
-										Connect Wallet
+										{buttonTitle ? buttonTitle : 'Connect Wallet'}
 									</button>
 								);
 							}

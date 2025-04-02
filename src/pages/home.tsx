@@ -264,17 +264,17 @@ const Home: React.FC = () => {
                 <div className="w-full 2xl:w-[1280px] 2xl:mx-auto md:px-8 2xl:px-0 px-4 text-primary pt-20 gap-20">
                     <div className="w-full md:pt-[80px] pt-[30px] bg-primary-bg">
                         <div className="space-y-6">
-                            <InfoCard disabled={!data?.address} label='total-reward' value={reward} viewDetail={`https://sepolia.etherscan.io/address/${import.meta.env.VITE_STAKE_CA}#tokentxns`} />
+                            <InfoCard disabled={!data?.address} label='total-reward' value={reward} viewDetail={`https://sepolia.etherscan.io/address/${import.meta.env.VITE_VESTING_CA}#tokentxns`} />
                             {/* <div className="flex lg:hidden lg:flex-row flex-col gap-6">
                                 <div className="flex md:flex-row flex-col gap-6">
-                                    <InfoCard disabled={!data?.address} label='stake' value={stakeAmount} viewDetail={`https://sepolia.etherscan.io/address/${import.meta.env.VITE_STAKE_CA}#tokentxns`} stakeAction={handleStakeAction} unstakeAction={handleUnstakeAction} />
-                                    <InfoCard disabled={!data?.address} label='duration' value={stakingDuration} viewDetail={`https://sepolia.etherscan.io/address/${import.meta.env.VITE_STAKE_CA}#tokentxns`} />
+                                    <InfoCard disabled={!data?.address} label='stake' value={stakeAmount} viewDetail={`https://sepolia.etherscan.io/address/${import.meta.env.VITE_VESTING_CA}#tokentxns`} stakeAction={handleStakeAction} unstakeAction={handleUnstakeAction} />
+                                    <InfoCard disabled={!data?.address} label='duration' value={stakingDuration} viewDetail={`https://sepolia.etherscan.io/address/${import.meta.env.VITE_VESTING_CA}#tokentxns`} />
                                 </div>
                                 <InfoCard disabled={!data?.address} label='balance' value={balance} viewDetail={`https://sepolia.etherscan.io/address/${data?.address}`} stakeAction={handleStakeAction} unstakeAction={handleUnstakeAction} />
                             </div> */}
                             <div className="grid md:grid-cols-2 grid-cols-1 gap-6">
-                                <InfoCard disabled={!data?.address} label='premier-staking' value={stakeAmount} viewDetail={`https://sepolia.etherscan.io/address/${import.meta.env.VITE_STAKE_CA}#tokentxns`} />
-                                <InfoCard disabled={!data?.address} label='network-founder-reward' value='200' viewDetail={`https://sepolia.etherscan.io/address/${import.meta.env.VITE_STAKE_CA}#tokentxns`} claimAction={handleClaimAction}>
+                                <InfoCard disabled={!data?.address} label='premier-staking' value={stakeAmount} viewDetail={`https://sepolia.etherscan.io/address/${import.meta.env.VITE_VESTING_CA}#tokentxns`} />
+                                <InfoCard disabled={!data?.address} label='network-founder-reward' value={data.address ? '200' : '0'} viewDetail={`https://sepolia.etherscan.io/address/${import.meta.env.VITE_VESTING_CA}#tokentxns`} claimAction={handleClaimAction}>
                                     <div className="text-primary text-[14px] flex flex-col gap-4">
                                         <div className="font-bold">You've been awarded WMTb - World Mobile bonus tokens, with a 1:1 value to WMTx.</div>
                                         <div>These tokens can be staked in Core and Premier staking programs just like WMTx. They remain locked until the official unlock date.</div>
@@ -363,8 +363,11 @@ const Home: React.FC = () => {
                                     >
                                         Claim
                                     </button> :
-                                    <div className="flex items-center justify-center w-full">
-                                        <ConnectWalletButton className="bg-black hover:bg-[#fff533] hover:text-black hover:border-yellow-300 text-white px-4 py-2 rounded-full border border-[#525252] font-semibold flex flex-row gap-1" />
+                                    <div className="flex items-center justify-start w-full">
+                                        <ConnectWalletButton
+                                            className="bg-primary hover:bg-[#fff533] hover:text-black text-primary-bg px-4 py-2 rounded-full font-semibold flex flex-row gap-1"
+                                            buttonTitle="Connect wallet to claim"
+                                        />
                                     </div>) :
                                 <div className="flex flex-col gap-3">
                                     <div className="w-max rounded-3xl py-2 px-4 text-[16px] text-light-border border border-light-border cursor-not-allowed">Exchanged</div>
