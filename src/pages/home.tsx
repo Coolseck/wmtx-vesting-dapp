@@ -239,6 +239,7 @@ const Home: React.FC = () => {
             console.log("Transaction successful:", vestingTx);
             if (vestingTx) {
                 setIsClaimed(true);
+                fetchEvents();
             }
         } catch (error: any) {
             console.error(error)
