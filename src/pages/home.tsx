@@ -3,6 +3,7 @@ import Web3 from "web3";
 
 import contractABI from '../utils/abis/stakingContract.json';
 import tokenABI from '../utils/abis/token.json';
+import vestingContractABI from '../utils/abis/vestingContract.json';
 
 import { useWalletContext } from "../utils/context/walletContext";
 
@@ -10,7 +11,6 @@ import { ConnectWalletButton } from "../utils/lib/connect-button";
 import InfoCard from "../components/InfoCard";
 import Modal from "../components/Modal";
 import Alert from "../components/Alert";
-import { shortNumber } from "../pages/leaderBoard";
 import { CopyIcon, InfoIcon } from "lucide-react";
 
 import Tier_dark_img from '../assets/img/tier-dark-icon.png'
@@ -23,12 +23,11 @@ const Home: React.FC = () => {
     // const [amount, setAmount] = useState<any>("");
     const [stakeAmount, setStakeAmount] = useState<number | string>("-");
     const [reward, setReward] = useState<number | string>("-");
-    const [stakingDuration, setStakingDuration] = useState<number | string>("-");
+    // const [stakingDuration, setStakingDuration] = useState<number | string>("-");
     const [copied, setCopied] = useState(false);
-    const valueToCopy = "abc123earvuin3q4rnhnwe8fu9023r9";
 
     const handleCopy = () => {
-        navigator.clipboard.writeText(valueToCopy).then(() => {
+        navigator.clipboard.writeText(claimedTx).then(() => {
             setCopied(true);
             setTimeout(() => setCopied(false), 2000); // Reset after 2 sec
         });
@@ -40,6 +39,8 @@ const Home: React.FC = () => {
     const [isExchangePopModal, setIsExchangePopModal] = useState(false);
     const [isConfirmTxPopModal, setIsConfirmTxPopModal] = useState(false);
     const [isClaimed, setIsClaimed] = useState(false);
+    const [releaseTime, setReleaseTime] = useState('');
+    const [claimedTx, setClaimedTx] = useState('');
     const [err, setErr] = useState({
         isErr: false, errMsg: ''
     });
@@ -49,13 +50,17 @@ const Home: React.FC = () => {
     //sepolia network
     const contractAddress = import.meta.env.VITE_STAKE_CA;
     const tokenContractAddress = import.meta.env.VITE_TOKEN_CA;
+    const vestingContractAddress = import.meta.env.VITE_VESTING_CA;
+
+    const web3 = new Web3(window.ethereum) || new Web3(new Web3.providers.HttpProvider(import.meta.env.VITE_INFURA_API));
+    const vestingContract: any = new web3.eth.Contract(vestingContractABI, vestingContractAddress);
 
     const fetchStakingData = async () => {
         try {
             if (!data.address) {
                 setStakeAmount('-');
                 setReward('-');
-                setStakingDuration('-');
+                // setStakingDuration('-');
                 // setAmount('');
                 setBalance('-')
                 return
@@ -81,18 +86,18 @@ const Home: React.FC = () => {
 
             // Fetch stake data from the contract
             const stakeData: any = await stakingContract.methods.stakes(data.address).call();
-            const currentTime = Date.now();
-            const startTime: number = Number(web3.utils.fromWei(stakeData.startTime, 0));
-            if (startTime === 0) {
-                setStakingDuration(0)
-            } else {
-                const duration = Math.floor((currentTime / 1000 - startTime) / 3600 / 24);
-                if (duration <= 0) {
-                    setStakingDuration(0)
-                } else {
-                    setStakingDuration(duration); // Replace with your logic for duration
-                }
-            }
+            // const currentTime = Date.now();
+            // const startTime: number = Number(web3.utils.fromWei(stakeData.startTime, 0));
+            // if (startTime === 0) {
+            //     setStakingDuration(0)
+            // } else {
+            //     const duration = Math.floor((currentTime / 1000 - startTime) / 3600 / 24);
+            //     if (duration <= 0) {
+            //         setStakingDuration(0)
+            //     } else {
+            //         setStakingDuration(duration); // Replace with your logic for duration
+            //     }
+            // }
             setStakeAmount(web3.utils.fromWei(stakeData.amount, "ether"));
             setReward(web3.utils.fromWei(stakeData.rewardDebt, "ether"));
 
@@ -107,8 +112,39 @@ const Home: React.FC = () => {
         }
     };
 
+    const fetchEvents = async () => {
+        try {
+            const events = await vestingContract.getPastEvents("BonusIssued", {
+                filter: { recipient: data.address },
+                fromBlock: 0,
+                toBlock: "latest"
+            });
+            if (events.length > 0) {
+                setIsClaimed(true);
+                const time = new Date(Number(events[0].returnValues.releaseTime) * 1000).toLocaleDateString('en-GB', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric',
+                })
+                setReleaseTime(time)
+                setClaimedTx(events[0].transactionHash)
+            } else {
+                setIsClaimed(false);
+                const time = new Date(Date.now() + 3600 * 24 * 30 * 24 * 1000).toLocaleDateString('en-GB', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric',
+                })
+                setReleaseTime(time)
+            }
+        } catch (error) {
+            console.error("Error checking BonusIssued event", error);
+        }
+    }
+
     useEffect(() => {
         fetchStakingData();
+        fetchEvents();
     }, [data]);
 
     const handleClaimAction = () => {
@@ -190,20 +226,35 @@ const Home: React.FC = () => {
     //     }
     // };
 
-    const handleClaim = () => {
+    const handleClaim = async () => {
         try {
-            console.log('claiming....')
-        } catch (error) {
+            setModalStatus('loading');
+            await window.ethereum.request({ method: "eth_requestAccounts" }); // Request user accounts
+            const accounts = await web3.eth.getAccounts();
+            const account = accounts[0]; // Get the user's account address
+
+            const paymentAmount = web3.utils.toWei("150", "ether");
+            const plan = 12;
+            const vestingTx = await vestingContract.methods.issueBonus(account, paymentAmount, plan).send({ from: account });
+            console.log("Transaction successful:", vestingTx);
+            if (vestingTx) {
+                setIsClaimed(true);
+            }
+        } catch (error: any) {
             console.error(error)
+            setErr({
+                isErr: true,
+                errMsg: error.message,
+            });
         } finally {
             setIsClaimPopModal(false);
-            setIsClaimed(true);
+            setModalStatus('opened');
         }
     }
 
     const handleCloseModal = () => {
         setModalStatus('closed');
-        setIsClaimed(false)
+        // setIsClaimed(false)
         // setAmount('')
     }
 
@@ -223,7 +274,7 @@ const Home: React.FC = () => {
                             </div> */}
                             <div className="grid md:grid-cols-2 grid-cols-1 gap-6">
                                 <InfoCard disabled={!data?.address} label='premier-staking' value={stakeAmount} viewDetail={`https://sepolia.etherscan.io/address/${import.meta.env.VITE_STAKE_CA}#tokentxns`} />
-                                <InfoCard disabled={!data?.address} label='network-founder-reward' value={stakingDuration} viewDetail={`https://sepolia.etherscan.io/address/${import.meta.env.VITE_STAKE_CA}#tokentxns`} claimAction={handleClaimAction}>
+                                <InfoCard disabled={!data?.address} label='network-founder-reward' value='200' viewDetail={`https://sepolia.etherscan.io/address/${import.meta.env.VITE_STAKE_CA}#tokentxns`} claimAction={handleClaimAction}>
                                     <div className="text-primary text-[14px] flex flex-col gap-4">
                                         <div className="font-bold">You've been awarded WMTb - World Mobile bonus tokens, with a 1:1 value to WMTx.</div>
                                         <div>These tokens can be staked in Core and Premier staking programs just like WMTx. They remain locked until the official unlock date.</div>
@@ -287,7 +338,7 @@ const Home: React.FC = () => {
                             </div>
                         </PopoverModal>
                     </div>
-                    <div className={`font-bold text-primary text-4xl`}>{(shortNumber(Number(balance === '-' ? 0 : balance)) + 'WMTb')}</div>
+                    <div className={`font-bold text-primary text-4xl`}>200 WMTb</div>
                 </div>
                 <div className="flex flex-col w-full gap-1">
                     <div className="text-primary">Contract</div>
@@ -296,7 +347,7 @@ const Home: React.FC = () => {
                         <div className="flex flex-row w-full">
                             <div className="flex flex-col gap-2 w-[50%]">
                                 <div className="text-[14px]">Unlock date</div>
-                                <div className="text-[16px]">18 Mar 2025</div>
+                                <div className="text-[16px]">{releaseTime}</div>
                             </div>
                             <div className="flex flex-col gap-2 w-[50%]">
                                 <div className="text-[14px]">Reward</div>
@@ -331,7 +382,7 @@ const Home: React.FC = () => {
                                             <div className="flex flex-row w-full">
                                                 <div className="space-y-1 w-[50%]">
                                                     <div className="text-[14px] text-light">Unlock date</div>
-                                                    <div className="text-[16px] text-primary">18 Mar 2025</div>
+                                                    <div className="text-[16px] text-primary">{releaseTime}</div>
                                                 </div>
                                                 <div className="space-y-1 w-[50%]">
                                                     <div className="text-[14px] text-light">Reward</div>
@@ -341,9 +392,9 @@ const Home: React.FC = () => {
                                             <div className="space-y-1">
                                                 <div className="text-[14px] text-light">Transaction ID</div>
                                                 <div className="flex flex-row gap-2">
-                                                    <div className="text-[16px] text-primary">{valueToCopy}</div>
+                                                    <div className="text-[16px] text-primary">{claimedTx.slice(0, 12) + '...' + claimedTx.slice(-12)}</div>
                                                     <div onClick={handleCopy}>
-                                                        <CopyIcon />
+                                                        <CopyIcon className="cursor-pointer" />
                                                     </div>
                                                 </div>
                                                 {copied && <span className="text-sm text-green-500">Copied!</span>}
@@ -374,7 +425,7 @@ const Home: React.FC = () => {
                                 <div className="flex flex-row w-full">
                                     <div className="flex flex-col gap-2 w-[50%]">
                                         <div className="text-[14px]">Unlock date</div>
-                                        <div className="text-[16px]">18 Mar 2025</div>
+                                        <div className="text-[16px]">{releaseTime}</div>
                                     </div>
                                     <div className="flex flex-col gap-2 w-[50%]">
                                         <div className="text-[14px]">Reward</div>
@@ -405,11 +456,11 @@ const Home: React.FC = () => {
                                 <div className="flex flex-row w-full">
                                     <div className="flex flex-col gap-2 w-[50%]">
                                         <div className="text-[14px]">Unlock date</div>
-                                        <div className="text-[16px]">18 Mar 2025</div>
+                                        <div className="text-[16px]">{releaseTime}</div>
                                     </div>
                                     <div className="flex flex-col gap-2 w-[50%]">
                                         <div className="text-[14px]">Reward</div>
-                                        <div className="text-[16px]">150 WMTb</div>
+                                        <div className="text-[16px]">50 WMTb</div>
                                     </div>
                                 </div>
                                 <div className="w-max rounded-3xl py-2 px-4 text-[16px] text-light-border border border-light-border cursor-not-allowed">Locked</div>

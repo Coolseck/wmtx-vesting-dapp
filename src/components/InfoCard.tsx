@@ -87,7 +87,7 @@ const InfoCard = ({ disabled, label, value, claimAction, viewDetail, children }:
                 </PopoverModal>
             </div>
             <div>
-                <div className={`font-bold ${label === 'total-reward' ? 'text-black text-5xl' : 'text-primary text-4xl'}`}>{label === 'duration' ? (value === '-' ? 0 : value) + (value === 1 ? ' Day' : ' Days') : (shortNumber(Number(value === '-' ? 0 : value)) + 'WMTx')}</div>
+                <div className={`font-bold ${label === 'total-reward' ? 'text-black text-5xl' : 'text-primary text-4xl'}`}>{label === 'duration' ? (value === '-' ? 0 : value) + (value === 1 ? ' Day' : ' Days') : (shortNumber(Number(value === '-' ? 0 : value)) + (label === 'network-founder-reward' ? 'WMTb' : 'WMTx'))}</div>
                 <div className={`text-sm font-semibold ${label === 'total-reward' ? 'text-black' : 'text-light'}`}>{label === 'duration' ? '\u00A0' : shortNumber((Number(value === '-' ? 0 : value)) * price) + ' USD'} {label === 'premier-staking' ? '• Bronze Tier' : label === 'airnodes' ? '• 20.3 GB Data transfer' : ''}</div>
             </div>
             <div className="flex md:flex-row flex-col gap-3">
