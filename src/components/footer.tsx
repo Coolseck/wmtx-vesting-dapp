@@ -109,7 +109,13 @@ const Footer: React.FC = () => {
                             <div className='flex flex-row gap-2'>
                                 <div className={`w-5 h-5 rounded-md cursor-pointer flex justify-center items-center text-black ${isAccepted ? 'bg-white' : 'hover:bg-[#171717] hover:text-[#171717] border border-[#525252]'}`} onClick={handleAcceptTerms}><Check size={15} /></div>
                                 <div className='text-[#A3A3A3]'>
-                                    I understand and consent to the following Privacy Policy
+                                    I understand and consent to the following
+                                    <a
+                                        className='border-b border-b-[#A3A3A3] ml-1'
+                                        href="https://worldmobile.io/privacy" target="_blank" rel="noopener noreferrer"
+                                    >
+                                        Privacy Policy
+                                    </a>
                                 </div>
                             </div>
                         </div>
