@@ -42,8 +42,8 @@ const LeaderboardCard = ({ data, ranking }: any) => {
             <div className='flex flex-col gap-3'>
                 <h2 className="text-lg text-light">{data.address.slice(0, 10) + '...' + data.address.slice(-7)}</h2>
                 <div className="flex flex-row justify-between">
-                    <div className="text-primary font-bold">Staked</div>
-                    <div className="text-light">{shortNumber(Math.floor?.(Number(data.currentlyStaked) / 10 ** 18))}</div>
+                    <div className="text-primary font-bold">Locked</div>
+                    <div className="text-light">{shortNumber(Math.floor?.(Number(data.issuedAmount) / 10 ** 18))}</div>
                 </div>
                 <div className="flex flex-row justify-between">
                     <div className="text-primary font-bold">Joined</div>

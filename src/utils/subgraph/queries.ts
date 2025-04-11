@@ -1,19 +1,16 @@
 import { gql } from "@apollo/client";
 
-export const GET_TOP_STAKERS = gql`
-  query GetTopStakers {
-    stakers(
+export const GET_TOP_CLAIMERS = gql`
+  query GetTopClaimers {
+    claimers(
       first: 30,
-      orderBy: currentlyStaked,
+      orderBy: issuedAmount,
       orderDirection: desc
     ) {
       id
       address
-      totalStaked
-      totalUnstaked
-      currentlyStaked
+      issuedAmount
       createdAt
-      updatedAt
     }
   }
 `;

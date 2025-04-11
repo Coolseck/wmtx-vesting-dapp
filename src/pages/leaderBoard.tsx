@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useQuery } from "@apollo/client";
-import { GET_TOP_STAKERS } from "../utils/subgraph/queries";
+import { GET_TOP_CLAIMERS } from "../utils/subgraph/queries";
 import client from "../utils/subgraph/apolloClient";
 import Spinner from "../components/Spinner";
 import LeaderboardCard from "../components/LeaderboardCard";
@@ -23,23 +23,20 @@ export const shortNumber = (num: number) => {
 };
 
 
-interface Staker {
+interface Claimer {
     id: string;
     address: string;
-    totalStaked: string;
-    totalUnstaked: string;
-    currentlyStaked: string;
+    issuedAmount: string;
     createdAt: string | number;
-    updatedAt: string | number;
 }
 
-interface GetTopStakersData {
-    stakers: Staker[];
+interface GetTopClaimersData {
+    claimers: Claimer[];
 }
 
 const LeaderboardTable = () => {
 
-    const { loading, error, data } = useQuery<GetTopStakersData>(GET_TOP_STAKERS, {
+    const { loading, error, data } = useQuery<GetTopClaimersData>(GET_TOP_CLAIMERS, {
         client,
     });
 
@@ -55,9 +52,9 @@ const LeaderboardTable = () => {
                 loading ? <Spinner size='12' color='white' /> : (
                     <>
                         <div className="flex flex-col md:flex-row lg:justify-center justify-around gap-6 items-center w-full pt-10 pb-10">
-                            <LeaderboardCard data={data?.stakers[0]} ranking={1} />
-                            <LeaderboardCard data={data?.stakers[1]} ranking={2} />
-                            <LeaderboardCard data={data?.stakers[2]} ranking={3} />
+                            <LeaderboardCard data={data?.claimers[0]} ranking={1} />
+                            <LeaderboardCard data={data?.claimers[1]} ranking={2} />
+                            <LeaderboardCard data={data?.claimers[2]} ranking={3} />
                         </div>
                         <div className="w-full lg:flex hidden flex-col items-center relative bg-card-bg rounded-3xl overflow-hidden md:px-8 px-4 md:py-6 py-3">
                             {/* Table Header */}
@@ -66,13 +63,13 @@ const LeaderboardTable = () => {
                                 <span className="md:w-4/12 w-3/12">User</span>
                                 <span className="md:w-2/12 w-3/12">Joined</span>
                                 <span className="md:w-2/12 w-2/12">Status</span>
-                                <span className="md:w-2/12 w-2/12">Staked</span>
+                                <span className="md:w-2/12 w-2/12">Locked</span>
                                 <span className="md:w-1/12 w-1/12"></span>
                             </div>
 
                             {/* Scrollable Rows */}
                             <div className="w-full overflow-y-auto">
-                                {data?.stakers.map((row, index) => (
+                                {data?.claimers.map((row, index) => (
                                     <div
                                         key={index}
                                         className={`w-full flex justify-between items-center md:px-6 px-1 py-4 text-light text-sm md:text-lg backdrop-blur border-t border-light-border`}
@@ -90,23 +87,23 @@ const LeaderboardTable = () => {
                                         <span className="md:w-2/12 w-3/12">{new Date(Number(row.createdAt) * 1000).toLocaleDateString()}</span>
                                         <span className="md:w-2/12 w-2/12">Legend</span>
                                         <span className="md:w-2/12 w-2/12">
-                                            {shortNumber(Math.floor?.(Number(row.currentlyStaked) / 10 ** 18))}
+                                            {shortNumber(Math.floor?.(Number(row.issuedAmount) / 10 ** 18))}
                                         </span>
-                                        <span className="md:w-1/12 w-1/12">WMTx</span>
+                                        <span className="md:w-1/12 w-1/12">WMTb</span>
                                     </div>
                                 ))}
                             </div>
                         </div>
                         <div className="w-full lg:hidden flex flex-col relative bg-card-bg rounded-3xl overflow-hidden md:px-8 px-4 md:py-6 py-3">
                             <div className="space-y-4 w-full">
-                                {data?.stakers.map((row, index) => (
+                                {data?.claimers.map((row, index) => (
                                     <div className="flex flex-row justify-between border-b border-b-light-border last:border-b-0 pb-4" key={index}>
                                         <div className="flex flex-col space-y-4 justify-center text-primary">
                                             <span className="">#</span>
                                             <span className="">User</span>
                                             <span className="">Joined</span>
                                             <span className="">Status</span>
-                                            <span className="">Staked</span>
+                                            <span className="">Locked</span>
                                         </div>
                                         <div className="flex flex-col space-y-4 justify-center items-end text-light">
                                             <span className="">{index + 1}</span>
@@ -121,7 +118,7 @@ const LeaderboardTable = () => {
                                             <span className="">{new Date(Number(row.createdAt) * 1000).toLocaleDateString()}</span>
                                             <span className="">Legend</span>
                                             <span className="">
-                                                {shortNumber(Math.floor?.(Number(row.currentlyStaked) / 10 ** 18)) + ' WNTx'}
+                                                {shortNumber(Math.floor?.(Number(row.issuedAmount) / 10 ** 18)) + ' WNTx'}
                                             </span>
                                         </div>
                                     </div>
@@ -145,7 +142,7 @@ const LeaderBoard: React.FC = () => {
                     {/* Content */}
                     <div className="relative flex flex-col items-start justify-start min-h-lvh text-white z-10 pt-20 gap-3">
                         {/* <div className="md:text-lg text-lg font-bold border border-white text-white rounded-tr-3xl rounded-bl-3xl w-max px-6 py-1 mt-10 mb:mt-20">Leaderboard</div> */}
-                        <div className="text-6xl 2xl:text-9xl xl:text-8xl lg:text-7xl md:text-5xl mt-5 mb:mt-20 lg:w-[95%] w-full text-primary font-semibold">Stake, rank up, and claim your rewards</div>
+                        <div className="text-6xl 2xl:text-9xl xl:text-8xl lg:text-7xl md:text-5xl mt-5 mb:mt-20 lg:w-[95%] w-full text-primary font-semibold">Lock, rank up, and claim your bonus</div>
                         <LeaderboardTable />
                     </div>
                 </div>
